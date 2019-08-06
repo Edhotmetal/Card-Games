@@ -106,19 +106,10 @@ class HighLowField < Qt::Widget
 
 			@current_card = @deck.deal_card
 			
-				# Get the next card and show it to the user
-				
-				@next_card = @deck.deal_card
-				update()
-
-				# Check the user's prediction
-
-				if(@next_card.value == @current_card.value) then
-					puts("Next card is equal")
-					@message = "You lose on ties. Sorry!"
-					endGame
-				end	
-				@message = "Is the next card higher or lower?"
+			@next_card = @deck.deal_card
+			@reveal = false
+			@message = "Is the next card higher or lower?"
+			update
 		end
 	end
 
@@ -142,6 +133,13 @@ class HighLowField < Qt::Widget
 
 	def checkPrediction()
 		@reveal = true # Reveal the card to the player
+
+		if(@next_card.value == @current_card.value) then
+			puts("Next card is equal")
+			@message = "You lose on ties. Sorry!"
+			endGame
+		end	
+	
 		if(@next_card.value > @current_card.value) then
 			if(@guess == 'H') then
 				@message = "Your prediction is correct!"
