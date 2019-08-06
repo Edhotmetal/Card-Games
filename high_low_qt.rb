@@ -19,10 +19,10 @@ class HighLowField < Qt::Widget
 		@next_card = nil
 		@guess = nil
 		@playing = false # True when a game is currently playing
-		@total_score = 0
 		@average_score = 0.0
 		@games_played = 0
 		@correct_guesses = 0
+		@deck = Deck.new
 		@reveal = false # True when the next card should be revealed
 		@message = nil # Message sent to the player
 		@image = Qt::Image.new("cards.png")
@@ -98,7 +98,6 @@ class HighLowField < Qt::Widget
 			@playing = true
 			@games_played += 1
 			@correct_guesses = 0
-			@deck = Deck.new
 
 			correct_guesses = 0
 
@@ -122,7 +121,6 @@ class HighLowField < Qt::Widget
 		@message = "Is the next card higher or lower?"
 		update
 	end
-
 
 	def endGame()
 		@playing = false
