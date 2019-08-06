@@ -13,43 +13,43 @@ class HighLowField < Qt::Widget
 	def initialize(parent = nil)
 		super
 
-		setPalette(Qt::Palette.new(Qt::Color.new(250,250,200)))
-	
 		@current_card = nil
 		@next_card = nil
 		@guess = nil
 		@playing = false # True when a game is currently playing
 		@average_score = 0.0
+		@total_score = 0
 		@games_played = 0
 		@correct_guesses = 0
 		@deck = Deck.new
 		@reveal = false # True when the next card should be revealed
-		@message = nil # Message sent to the player
+		@message = "Click play to start!" # Message sent to the player
 		@image = Qt::Image.new("cards.png")
-		resize(200,200)
 	end
 	
 	def highPressed()
 		@guess = 'H'
-		if(@playing) then
+		if(@playing and not(@reveal)) then
 			checkPrediction
+		else
+			@message = "Press Deal to continue playing!"
+			update
 		end
 	end
 
 	def lowPressed()
 		@guess = 'L'
-		if(@playing) then
+		if(@playing and not(@reveal)) then
 			checkPrediction
+		else
+			@message = "Press Deal to continue playing!"
+			update
 		end
 	end
 
 	def paintEvent(event)
 		painter = Qt::Painter.new(self)
-		if(@playing) then
-			draw_cards(painter)
-		else
-			painter.drawText(Qt::Rect.new, Qt::AlignCenter, tr("Click to start a new game!"))
-		end
+		draw_cards(painter)
 		painter.end
 	end
 
@@ -65,7 +65,7 @@ class HighLowField < Qt::Widget
 			source_x = (@current_card.value-1) * 79
 		end
 		target_y = 1
-		target_x = 1
+		target_x = 30
 		
 		target = Qt::Rect.new(target_x.to_i, target_y.to_i, 79, 123)
 		source = Qt::Rect.new(source_x.to_i, source_y.to_i, 79, 123)
@@ -80,7 +80,7 @@ class HighLowField < Qt::Widget
 			source_y = 4 * 123
 			source_x = 2 * 79
 		end
-		target_x = 150
+		target_x = 180
 
 		target.setRect(target_x.to_i, target_y.to_i, 79, 123)
 		source.setRect(source_x.to_i, source_y.to_i, 79, 123)
@@ -99,7 +99,7 @@ class HighLowField < Qt::Widget
 			@games_played += 1
 			@correct_guesses = 0
 
-			correct_guesses = 0
+			emit scoreChanged(@correct_guesses)
 
 			@deck.shuffle
 
@@ -117,16 +117,19 @@ class HighLowField < Qt::Widget
 			@current_card = @next_card
 			@next_card = @deck.deal_card
 			@reveal = false
+			@message = "Is the next card higher or lower?"
+		elsif(not(@playing) and @reveal) then
+			startGame
 		end
-		@message = "Is the next card higher or lower?"
 		update
 	end
 
 	def endGame()
-		@playing = false
-		@average_score = @correct_guesses.fdiv(@games_played)
+		@total_score += @correct_guesses
+		@average_score = @total_score.fdiv(@games_played)
 		emit averageScoreChanged(@average_score)
 		update
+		@playing = false
 	end
 
 	def checkPrediction()
@@ -194,19 +197,18 @@ class HighLowWidget < Qt::Widget
 		average_score = Qt::LCDNumber.new
 		connect(@highLowField, SIGNAL("averageScoreChanged(double)"), average_score, SLOT("display(double)"))
 
-		leftLayout = Qt::VBoxLayout.new
-		leftLayout.addWidget(current_score)
-		leftLayout.addWidget(average_score)
+		bottomLayout = Qt::HBoxLayout.new
+		bottomLayout.addWidget(play)
+		bottomLayout.addWidget(deal)
 
 		gridLayout = Qt::GridLayout.new
 		gridLayout.addWidget(@highLowField, 0, 1)
-		gridLayout.addLayout(leftLayout, 1, 0)
-		gridLayout.addWidget(higher, 3, 1, 2, 1)
-		gridLayout.addWidget(lower, 3, 2, 2, 1)
-		gridLayout.addWidget(play, 3, 2, 3, 3)
-		gridLayout.addWidget(deal, 3, 3, 3, 3)
-		gridLayout.setRowMinimumHeight(0, 200)
-		gridLayout.setColumnMinimumWidth(1, 400)
+		gridLayout.addWidget(current_score, 0, 0)
+		gridLayout.addWidget(average_score, 1, 0)
+		gridLayout.addWidget(higher, 1, 1)
+		gridLayout.addWidget(lower, 2, 1)
+		gridLayout.addLayout(bottomLayout, 3, 1)
+		gridLayout.setColumnMinimumWidth(1, 300)
 		setLayout(gridLayout)
 	end
 end
@@ -216,7 +218,7 @@ app = Qt::Application.new(ARGV)
 widget = HighLowWidget.new
 p(widget)
 puts("HighLowWidget should be ready by now.")
-widget.resize(500, 500)
+widget.resize(500, 300)
 widget.show()
 app.exec
 
