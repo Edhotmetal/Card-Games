@@ -18,9 +18,8 @@ It contains the CardWidget class which extends Widget
 This program allows you to play the famed high low card game you know and love, only now with a GUI!
 A card is dealt from a deck of cards.
 You have to predict whether the next card will be higher or lower.
-If the next card is the same, you lose. I might change that.
+If the next card is the same, you lose.
 
 The main window is a HighLowWidget. It contains all of the widgets including the HighLowField where the game actually takes place.
 On the left side, there are two numbers. The top one is your current score and the bottom is your average score.
 Click "Play" to start a new game. Click "Higher" or "Lower" according to your prediction, and then click "Deal" to get a new card.
-The game goes blank when you lose. I need to make a proper losing screen.
