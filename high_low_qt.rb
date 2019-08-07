@@ -10,14 +10,13 @@ class HighLowField < Qt::Widget
 	signals 'averageScoreChanged(double)', 'scoreChanged(int)'
 	slots 'lowPressed()', 'highPressed()', 'startGame()', 'dealCard()'
 
-	def initialize(parent = nil)
+	def initialize()
 		super
 
 		@current_card = nil
 		@next_card = nil
 		@guess = nil
 		@playing = false # True when a game is currently playing
-		@average_score = 0.0
 		@total_score = 0
 		@games_played = 0
 		@correct_guesses = 0
@@ -54,14 +53,12 @@ class HighLowField < Qt::Widget
 	end
 
 	def draw_cards(painter)
-		puts("drawing cards")
 		# Draw the current card
 		if(@current_card == nil) then # If there is no current card, draw a face down card
 			source_y = 4 * 123
 			source_x = 2 * 79
 		else
 			source_y = @current_card.suit * 123
-			puts("source_y = #{source_y}")
 			source_x = (@current_card.value-1) * 79
 		end
 		target_y = 1
@@ -69,7 +66,6 @@ class HighLowField < Qt::Widget
 		
 		target = Qt::Rect.new(target_x.to_i, target_y.to_i, 79, 123)
 		source = Qt::Rect.new(source_x.to_i, source_y.to_i, 79, 123)
-		puts("drawing first card")
 		painter.drawImage(target, @image, source)
 
 		# Draw the next card
@@ -87,7 +83,6 @@ class HighLowField < Qt::Widget
 		painter.drawImage(target, @image, source)
 
 		painter.drawText(Qt::Rect.new(0,100,300,100), Qt::AlignCenter, tr(@message))
-		puts("drawcards finished")
 	end
 
 	def startGame()
@@ -126,8 +121,7 @@ class HighLowField < Qt::Widget
 
 	def endGame()
 		@total_score += @correct_guesses
-		@average_score = @total_score.fdiv(@games_played)
-		emit averageScoreChanged(@average_score)
+		emit averageScoreChanged(@total_score.fdiv(@games_played))
 		update
 		@playing = false
 	end
@@ -139,9 +133,7 @@ class HighLowField < Qt::Widget
 			puts("Next card is equal")
 			@message = "You lose on ties. Sorry!"
 			endGame
-		end	
-	
-		if(@next_card.value > @current_card.value) then
+		elsif(@next_card.value > @current_card.value) then
 			if(@guess == 'H') then
 				@message = "Your prediction is correct!"
 				@correct_guesses += 1
@@ -169,7 +161,6 @@ end
 
 class HighLowWidget < Qt::Widget
 	def initialize(parent = nil)
-		puts("Initializing HighLowWidget")
 		super
 
 		higher = Qt::PushButton.new(tr("Higher"))
@@ -181,30 +172,33 @@ class HighLowWidget < Qt::Widget
 		play.setFont(font)
 		deal = Qt::PushButton.new(tr("Deal"))
 		deal.setFont(font)
-		@highLowField = HighLowField.new
+		highLowField = HighLowField.new
 
-		connect(higher, SIGNAL("clicked()"), @highLowField, SLOT("highPressed()")) 
+		connect(higher, SIGNAL("clicked()"), highLowField, SLOT("highPressed()")) 
 
-		connect(lower, SIGNAL("clicked()"), @highLowField, SLOT("lowPressed()"))
+		connect(lower, SIGNAL("clicked()"), highLowField, SLOT("lowPressed()"))
 
-		connect(play, SIGNAL("clicked()"), @highLowField, SLOT("startGame()"))
+		connect(play, SIGNAL("clicked()"), highLowField, SLOT("startGame()"))
 
-		connect(deal, SIGNAL("clicked()"), @highLowField, SLOT("dealCard()"))
+		connect(deal, SIGNAL("clicked()"), highLowField, SLOT("dealCard()"))
 
 		current_score = Qt::LCDNumber.new
-		connect(@highLowField, SIGNAL("scoreChanged(int)"), current_score, SLOT("display(int)"))
+		connect(highLowField, SIGNAL("scoreChanged(int)"), current_score, SLOT("display(int)"))
 
 		average_score = Qt::LCDNumber.new
-		connect(@highLowField, SIGNAL("averageScoreChanged(double)"), average_score, SLOT("display(double)"))
+		connect(highLowField, SIGNAL("averageScoreChanged(double)"), average_score, SLOT("display(double)"))
 
 		bottomLayout = Qt::HBoxLayout.new
 		bottomLayout.addWidget(play)
 		bottomLayout.addWidget(deal)
 
+		scoreLayout = Qt::VBoxLayout.new
+		scoreLayout.addWidget(current_score)
+		scoreLayout.addWidget(average_score)
+
 		gridLayout = Qt::GridLayout.new
-		gridLayout.addWidget(@highLowField, 0, 1)
-		gridLayout.addWidget(current_score, 0, 0)
-		gridLayout.addWidget(average_score, 1, 0)
+		gridLayout.addWidget(highLowField, 0, 1)
+		gridLayout.addLayout(scoreLayout, 0, 0)
 		gridLayout.addWidget(higher, 1, 1)
 		gridLayout.addWidget(lower, 2, 1)
 		gridLayout.addLayout(bottomLayout, 3, 1)
@@ -216,9 +210,6 @@ end
 app = Qt::Application.new(ARGV)
 
 widget = HighLowWidget.new
-p(widget)
-puts("HighLowWidget should be ready by now.")
 widget.resize(500, 300)
 widget.show()
 app.exec
-
