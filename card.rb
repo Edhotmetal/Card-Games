@@ -49,7 +49,7 @@ class Card
 	# For a Joker, the value can be anything.
 	# @param suit is the suit of the new card. This must be one of the values
 	# Card.SPADES, Card.HEARTS, Card.DIAMONDS, Card.CLUBS, or Card.JOKER.
-	# @raises IllegalArgumentException if the parrameter values are not in the
+	# @raises IllegalArgumentException if the parameter values are not in the
 	# permissible ranges
 	
 	def initialize(value, suit)
