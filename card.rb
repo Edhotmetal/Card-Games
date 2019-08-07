@@ -10,10 +10,12 @@
 
 class Card
 
-	@@SPADES = 0 # Codes for the 4 suits, plus Joker
-	@@HEARTS = 1
-	@@DIAMONDS = 2
-	@@CLUBS = 3
+	# I changed these values so that they line up with cards.png
+	# It makes the calculations for displaying them easier
+	@@SPADES = 3 # Codes for the 4 suits, plus Joker
+	@@HEARTS = 2
+	@@DIAMONDS = 1
+	@@CLUBS = 0
 	@@JOKER = 4
 
 	@@ACE = 1 	 # Codes for the non-numeric cards.
