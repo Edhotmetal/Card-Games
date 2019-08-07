@@ -32,19 +32,19 @@ class Hand
 	# the hand, then nothing happens
 
 	def remove_card(card)
-		@hand.delete(card)
+		return @hand.delete(card)
 	end
 
 	# Remove the card in a specified position from the hand
 	# param position is the position of the card that is to be removed
 	# where positions are number starting from zero.
-	# raises ArgumentError if the position is less than 0 or greater than
 	# or equal to the number of cards in the hand
 	def remove_card_at(position)
-		if(position < 0 or position >= @hand.length)
-			raise ArgumentError "Position #{position} does not exist in hand"
-		end
-		@hand.delete_at(position)
+		return @hand.delete_at(position)
+	end
+
+	def take_last_card()
+		return @hand.pop
 	end
 
 	# Returns the number of cards in the hand
@@ -58,14 +58,7 @@ class Hand
 	# raises ArgumentError if position does not exist in the hand
 
 	def get_card(position)
-		if(position < 0 or position >= @hand.length)
-			raise ArgumentError "Position #{position} does not exist in hand"
-		end
 		return @hand[position]
-	end
-
-	def take_card()
-		return @hand.pop
 	end
 
 	# Sorts the cards in the hand so that cards of the same suit are
