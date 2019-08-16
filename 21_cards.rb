@@ -25,6 +25,7 @@ class CardField < Qt::Widget
 		@player_card = nil
 		@message = "Three columns of cards will be displayed before the player.\n Select a card then point to the column that contains it!\n Click Deal to start playing."
 		@image = Qt::Image.new("cards.png")
+		@default_font = Qt::Font.new("Times", 13, Qt::Font::Bold)
 	end
 
 	def startGame()
@@ -40,12 +41,10 @@ class CardField < Qt::Widget
 
 	# Take 21 cards from the deck and place them into the main hand
 	def first_deal()
-		puts("Dealing to the main hand")
 		@deck.shuffle
 		for i in 1..21 do
 			@main_hand.add_card(@deck.deal_card)
 		end
-		puts("main_hand contains #{@main_hand.get_card_count} cards")
 		@column_one.clear
 		@column_two.clear
 		@column_three.clear
@@ -53,15 +52,11 @@ class CardField < Qt::Widget
 
 	# Deal the 21 cards in the main hand to the three columns
 	def deal_cards()
-		puts("Laying out the cards")
 		while(@main_hand.get_card_count > 0) do
 			@column_one.add_card(@main_hand.take_last_card)
 			@column_two.add_card(@main_hand.take_last_card)
 			@column_three.add_card(@main_hand.take_last_card)
 		end
-		puts("column_one contains #{@column_one.get_card_count} cards")
-		puts("column_two contains #{@column_two.get_card_count} cards")
-		puts("column_three contains #{@column_three.get_card_count} cards")
 		@message = "Choose the column that contains your card!"
 		update
 	end
@@ -72,7 +67,6 @@ class CardField < Qt::Widget
 			@message = "Click Deal to start playing!"
 			update
 		elsif(@round < 3) then
-			puts("Player selected column 1")
 			pick_up_cards(1)
 		else
 			reveal_card(1)
@@ -85,7 +79,6 @@ class CardField < Qt::Widget
 			@message = "Click Deal to start playing!"
 			update
 		elsif(@round < 3) then
-			puts("Player selected column 2")
 			pick_up_cards(2)
 		else
 			reveal_card(2)
@@ -98,7 +91,6 @@ class CardField < Qt::Widget
 			@message = "Click Deal to start playing!"
 			update	
 		elsif(@round < 3) then
-			puts("Player selected column 3")
 			pick_up_cards(3)
 		else
 			reveal_card(3)
@@ -128,7 +120,6 @@ class CardField < Qt::Widget
 
 	# Pick up the selected column and place it into the main hand
 	def take_column(column)
-		puts("taking column ##{column}")
 		case column
 		when 1
 			while(@column_one.get_card_count > 0) do
@@ -155,11 +146,9 @@ class CardField < Qt::Widget
 		when 3
 			@player_card = @column_three.get_card(3)
 		end
-		puts("The player's card is #{@player_card}")
 		@message = "Your card is #{@player_card}!"
 		update
 		@playing = false
-		@player_card = nil
 	end
 
 	def paintEvent(event)
@@ -167,14 +156,25 @@ class CardField < Qt::Widget
 		if(@playing) then
 			draw_cards(painter)
 		else
-			puts("Game is not playing so displaying message")
+			if(@player_card != nil) then # If the program knows the player's card, display it
+				source_x = (@player_card.value - 1) * 79
+				source_y = @player_card.suit * 123
+				target_x = 200
+				target_y = 130
+				target = Qt::Rect.new(target_x.to_i, target_y.to_i, 79, 123)
+				source = Qt::Rect.new(source_x.to_i, source_y.to_i, 79, 123)
+				painter.drawImage(target, @image, source)
+			else # If no game has been played yet
+				painter.setFont(Qt::Font.new("Elephant", 26))
+				painter.drawText(Qt::Rect.new(100,10,300,100), Qt::AlignCenter, tr("21 Card Trick!"))
+			end
+			painter.setFont(@default_font)
 			painter.drawText(Qt::Rect.new(0,50,500,500), Qt::AlignCenter, @message)
 		end
 		painter.end
 	end
 
 	def draw_cards(painter)
-		puts("Drawing columns")
 		# Draw the first column
 		target = Qt::Rect.new # The area where the card will be drawn
 		source = Qt::Rect.new # the area of cards.png that contains the card to be drawn
@@ -213,17 +213,6 @@ class CardField < Qt::Widget
 			target_y += 50
 		end
 
-		if(@player_card != nil) then # If the program knows the player's card, display it
-			puts("displaying the player's card")
-			source_x = (@player_card.value - 1) * 79
-			source_y = @player_card.suit * 123
-			target_x = 130
-			target_y += 100
-			target.setRect(target_x.to_i, target_y.to_i, 79, 123)
-			source.setRect(source_x.to_i, source_y.to_i, 79, 123)
-			painter.drawImage(target, @image, source)
-		end
-
 		painter.drawText(Qt::Rect.new(100,400,250,100), Qt::AlignCenter, tr(@message))
 	end
 end
@@ -231,6 +220,7 @@ end
 class CardTrickWidget < Qt::Widget
 	def initialize(parent = nil)
 		super
+		setWindowTitle("21 Card Trick!")
 
 		one = Qt::PushButton.new(tr("One"))
 		two = Qt::PushButton.new(tr("Two"))
