@@ -59,7 +59,7 @@ class HighLowField < Qt::Widget
 			source_x = 2 * 79
 		else
 			source_y = @current_card.suit * 123
-			source_x = (@current_card.value-1) * 79
+			source_x = (@current_card.value - 1) * 79
 		end
 		target_y = 1
 		target_x = 30
@@ -71,7 +71,7 @@ class HighLowField < Qt::Widget
 		# Draw the next card
 		if(@next_card != nil and @reveal == true) then
 			source_y = @next_card.suit * 123
-			source_x = (@next_card.value-1) * 79
+			source_x = (@next_card.value - 1) * 79
 		else # If the card should not be revealed, draw it face down
 			source_y = 4 * 123
 			source_x = 2 * 79

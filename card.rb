@@ -10,10 +10,12 @@
 
 class Card
 
-	@@SPADES = 0 # Codes for the 4 suits, plus Joker
-	@@HEARTS = 1
-	@@DIAMONDS = 2
-	@@CLUBS = 3
+	# I changed these values so that they line up with cards.png
+	# It makes the calculations for displaying them easier
+	@@SPADES = 3 # Codes for the 4 suits, plus Joker
+	@@HEARTS = 2
+	@@DIAMONDS = 1
+	@@CLUBS = 0
 	@@JOKER = 4
 
 	@@ACE = 1 	 # Codes for the non-numeric cards.
@@ -49,7 +51,7 @@ class Card
 	# For a Joker, the value can be anything.
 	# @param suit is the suit of the new card. This must be one of the values
 	# Card.SPADES, Card.HEARTS, Card.DIAMONDS, Card.CLUBS, or Card.JOKER.
-	# @raises IllegalArgumentException if the parrameter values are not in the
+	# @raises IllegalArgumentException if the parameter values are not in the
 	# permissible ranges
 	
 	def initialize(value, suit)

@@ -6,7 +6,9 @@ require_relative "card.rb"
 
 class Hand
 
-	@hand = Array.new # The cards in the hand
+	def initialize()
+		@hand = Array.new # The cards in the hand
+	end
 
 	# Remove all cards from the hand, leaving it empty
 	
@@ -30,20 +32,19 @@ class Hand
 	# the hand, then nothing happens
 
 	def remove_card(card)
-		@hand.delete(card)
+		return @hand.delete(card)
 	end
 
 	# Remove the card in a specified position from the hand
 	# param position is the position of the card that is to be removed
 	# where positions are number starting from zero.
-	# raises ArgumentError if the position is less than 0 or greater than
 	# or equal to the number of cards in the hand
 	def remove_card_at(position)
-		if(position < 0 or position >= @hand.length)
-			puts("Position #{position} does not exist in hand")
-			raise ArgumentError
-		end
-		@hand.delete_at(position)
+		return @hand.delete_at(position)
+	end
+
+	def take_last_card()
+		return @hand.pop
 	end
 
 	# Returns the number of cards in the hand
@@ -57,13 +58,8 @@ class Hand
 	# raises ArgumentError if position does not exist in the hand
 
 	def get_card(position)
-		if(position < 0 or position >= @hand.length)
-			puts("Position #{position} does not exist in hand")
-			raise ArgumentError
-		end
 		return @hand[position]
 	end
-
 
 	# Sorts the cards in the hand so that cards of the same suit are
 	# grouped together, and within a suit the cards are sorted by value.
@@ -75,7 +71,7 @@ class Hand
 			pos = 0 # Position of the minimal card
 			card = @hand[0] # Minimal card
 			for i in (@hand.length)..1
-				card1 = @hand.[i]
+				card1 = @hand[i]
 				if(card1.suit < card.suit or (card1.suit == card.suit and card1.value < card.value)) then
 					pos = i
 					card = card1

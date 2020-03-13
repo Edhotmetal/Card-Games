@@ -1,5 +1,5 @@
-# This program displays creates a deck from deck.rb, shuffles it,
-# and displays them in columns of five cards
+# This program creates a deck from deck.rb, shuffles it,
+# and displays the cards in columns of five cards
 
 require 'Qt4'
 require_relative 'deck.rb'
@@ -9,8 +9,6 @@ class CardWidget < Qt::Widget
 		super
 		setWindowTitle("Displaying cards!")
 
-		gridLayout = Qt::GridLayout.new
-		setLayout(gridLayout)
 		@deck = Deck.new(true)
 		@deck.shuffle
 	end
